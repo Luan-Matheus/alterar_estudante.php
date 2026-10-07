@@ -1,0 +1,261 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Estudante</title>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.5;
+            max-width: 900px;
+            margin: 0 auto;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            background: #212529;
+            color: white;
+            padding: 35px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        header p {
+            color: #ddd;
+        }
+
+        nav {
+            background: white;
+            padding: 15px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        nav a:hover {
+            color: #0056b3;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+        }
+
+        h2 {
+            color: #222;
+            border-bottom: 3px solid #ffc107;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .etapa {
+            color: #d39e00;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+        }
+
+        pre {
+            background: #212529;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        code {
+            color: #f8f9fa;
+            font-family: Consolas, monospace;
+            white-space: pre-wrap;
+        }
+
+        .destaque {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .fluxo {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .passo {
+            background: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 130px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 35px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>ALTERAR_ESTUDANTE.PHP</h1>
+    <p>Como funciona a edição de um cadastro</p>
+</header>
+
+<nav>
+    <a href="#objetivo">Objetivo</a>
+    <a href="#seguranca">Segurança</a>
+    <a href="#busca">Busca</a>
+    <a href="#atualizacao">Atualização</a>
+    <a href="#fluxo">Fluxo</a>
+</nav>
+
+<main class="container">
+
+    <section class="card" id="objetivo">
+        <span class="etapa">01 — OBJETIVO</span>
+        <h2>O que o arquivo faz?</h2>
+
+        <p>
+            O arquivo <strong>alterar_estudante.php</strong> permite editar
+            os dados de um estudante já cadastrado no sistema.
+        </p>
+
+        <div class="destaque">
+            Ele busca os dados atuais, mostra as informações no formulário
+            e salva as alterações no banco de dados.
+        </div>
+    </section>
+
+    <section class="card" id="seguranca">
+        <span class="etapa">02 — SEGURANÇA</span>
+        <h2>Verificação do usuário</h2>
+
+        <p>
+            Primeiro, o sistema verifica se o usuário está conectado.
+        </p>
+
+        <pre><code>session_start();
+
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: index.php");
+    exit;
+}</code></pre>
+
+        <p>
+            Se o usuário não estiver logado, ele será enviado para a página inicial.
+        </p>
+    </section>
+
+    <section class="card" id="busca">
+        <span class="etapa">03 — BUSCA DOS DADOS</span>
+        <h2>Encontrando o estudante</h2>
+
+        <p>
+            O sistema recebe o ID do estudante pela URL e procura esse registro no banco.
+        </p>
+
+        <pre><code>$stmt = $pdo->prepare(
+    "SELECT * FROM cadastro_estudantes
+     WHERE auto_num = :id"
+);
+
+$stmt->bindValue(':id', $id_estudante);
+$stmt->execute();
+
+$aluno = $stmt->fetch();</code></pre>
+
+        <p>
+            Os dados encontrados são armazenados na variável <strong>$aluno</strong>.
+        </p>
+    </section>
+
+    <section class="card" id="atualizacao">
+        <span class="etapa">04 — ATUALIZAÇÃO</span>
+        <h2>Salvando as alterações</h2>
+
+        <p>
+            Quando o formulário é enviado, os dados são recebidos pelo método POST.
+        </p>
+
+        <pre><code>if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = trim($_POST['nome']);
+    $turma = trim($_POST['turma']);
+}</code></pre>
+
+        <p>
+            Depois, o comando UPDATE altera os dados do estudante no banco.
+        </p>
+
+        <pre><code>UPDATE cadastro_estudantes
+SET nome = :nome,
+    turma = :turma
+WHERE auto_num = :id</code></pre>
+    </section>
+
+    <section class="card" id="fluxo">
+        <span class="etapa">05 — FUNCIONAMENTO</span>
+        <h2>Fluxo do sistema</h2>
+
+        <div class="fluxo">
+            <div class="passo">1. Login</div>
+            <div class="passo">2. Recebe o ID</div>
+            <div class="passo">3. Busca os dados</div>
+            <div class="passo">4. Edita o formulário</div>
+            <div class="passo">5. Atualiza o banco</div>
+        </div>
+
+        <p>
+            Após salvar, o sistema redireciona o usuário para a página de consulta.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    Apresentação sobre PHP e banco de dados
+</footer>
+
+</body>
+</html>
